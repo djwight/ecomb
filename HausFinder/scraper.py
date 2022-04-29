@@ -4,7 +4,6 @@ from random import uniform
 from datetime import date, timedelta
 from datetime import datetime
 from time import time, sleep
-from click import option
 import requests
 from bs4 import BeautifulSoup as bs
 from selenium import webdriver

@@ -1,6 +1,16 @@
 import requests
 import logging
+from typing import Dict
 import numpy as np
+
+
+def local_load_dot_env(path: str) -> Dict[str, str]:
+    with open(path, "r") as f:
+        return dict(
+            tuple(line.replace("\n", "").replace('"', "").split("="))
+            for line in f.readlines()
+            if not line.startswith("#")
+        )
 
 
 def time_in_mins(secs: int, dp: int = 2) -> float:

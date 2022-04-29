@@ -2,14 +2,10 @@ import os
 import logging
 from joblib import dump
 from time import time
-from HausFinder.utils import check_internet_connection, time_in_mins
-from HausFinder.iScrape import WebDriver, EbayKlein
+from HausFinder.utils import local_load_dot_env, check_internet_connection, time_in_mins
+from HausFinder.scraper import WebDriver, EbayKlein
 
-LOCATION = os.environ.get("search_location", "berlin")
-RADIUS = os.environ.get("search_radius", "20")
-DRIVER_PATH = os.environ.get("driver_path", "/home/darren/Documents/chromedriver")
-BASE_URL = os.environ.get("base_url", "https://www.ebay-kleinanzeigen.de/s-haus-kaufen")
-CAT_CODE = os.environ.get("cat_code", "c208l3331")
+env = local_load_dot_env(path=os.environ.get("dotenv_path"))
 
 
 def main() -> None:
@@ -24,19 +20,21 @@ def main() -> None:
     if check_internet_connection() != "OK: 200":
         raise RuntimeError("No connection to the internet!!")
 
-    web_driver = WebDriver(driver_path=DRIVER_PATH)
+    web_driver = WebDriver(driver_path=env["driver_path"])
 
     # initialise the ebay search engine
     ebay_handler = EbayKlein(
-        location=LOCATION,
-        radius=RADIUS,
-        base_url=BASE_URL,
-        category_code=CAT_CODE,
+        location=env["search_location"],
+        radius=env["search_radius"],
+        base_url=env["base_url"],
+        category_code=env["cat_code"],
         web_driver=web_driver.session,
     )
 
     # get advert urls
-    logging.info(f"Searching in {RADIUS} km from {LOCATION}!")
+    logging.info(
+        f"Searching in {env['search_radius']} km from {env['search_location']}!"
+    )
     advert_urls = ebay_handler.get_advert_urls()
     adverts = ebay_handler.parse_adverts(advert_urls)
     dump(adverts, "adverts_test.joblib")

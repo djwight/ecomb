@@ -21,7 +21,12 @@ RUN wget https://chromedriver.storage.googleapis.com/101.0.4951.41/chromedriver_
     && unzip chromedriver_linux64.zip \
     && rm chromedriver_linux64.zip \
     && chmod 755 chromedriver \
-    && mv chromedriver /usr/local/bin/ 
+    && mv chromedriver /usr/local/bin/
 
+# volume for env-specific data
+VOLUME ["data" ]
+
+# uncomment for debug to keep container running
+#ENTRYPOINT ["tail", "-f", "/dev/null"]
 ENTRYPOINT [ "python3", "run_search.py" ]
 
