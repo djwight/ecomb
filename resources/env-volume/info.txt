@@ -2,9 +2,11 @@ Insert a .env file in this directory with the following env variables declared. 
 during docker build and will not be added to the image. This .env file must be on the host machine and mounted 
 as a volume as shown in the README at runtime.
 
-gmail_pass=""
+email_token=""
 sender=""
-recipient=""
+
+# for multiple recipients seperate with ";"
+recipients=""
 search_location=""
 search_radius=""
 driver_path="/usr/local/bin/chromedriver"

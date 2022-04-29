@@ -1,11 +1,10 @@
 import logging
 from typing import List, Type, Dict
 from random import uniform
-from datetime import date, timedelta
-from datetime import datetime
+import datetime
 from time import time, sleep
-import requests
 from bs4 import BeautifulSoup as bs
+import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
@@ -29,6 +28,10 @@ class WebDriver:
 
     def __init__(self, driver_path: str) -> None:
         self.session = webdriver.Chrome(driver_path, options=self.options)
+
+    def driver_quit(self) -> None:
+        logging.info("Chrome session shutingdown...")
+        self.session.quit()
 
 
 class EbayKlein:
@@ -114,13 +117,14 @@ class EbayKlein:
         return advert_urls
 
     def parse_adverts(self, advert_urls: List[str]) -> List[Dict[str, str]]:
-        """_summary_
+        """Parses the data from the individual adverts using a list of advert urls. Re-tries failed
+        adverts up to 6 times before logging their failure.
 
         Args:
-            advert_urls (List[str]): _description_
+            advert_urls (List[str]): urls of the adverts to parse
 
         Returns:
-            List[Dict[str, str]]: _description_
+            List[Dict[str, str]]: list of dictionaries containing the parsed advert data
         """
         begin = time()
         logging.info(f"Parsing {(n_adverts:=len(advert_urls))} adverts!")
@@ -183,15 +187,6 @@ class EbayKlein:
     def filter_bad_adverts(
         self, adverts: List[Dict[str, str]], search_prefs: Dict[str, str]
     ) -> List[Dict[str, str]]:
-        """_summary_
-
-        Args:
-            adverts (List[Dict[str, str]]): _description_
-            search_prefs (Dict[str, str]): _description_
-
-        Returns:
-            List[Dict[str, str]]: _description_
-        """
         # remove adverts with no text description
         logging.info(f"{len(adverts)} input adverts to be filtered!")
         filtered = [i for i in adverts if i["description"] != ""]
@@ -200,16 +195,18 @@ class EbayKlein:
         )
 
         # remove postings older than 24h (intended to be run at midnight)
-        yesterday = datetime.strftime((date.today() - timedelta(days=1)), "%d.%M.%Y")
+        yesterday = datetime.datetime.strftime(
+            (datetime.date.today() - datetime.timedelta(days=1)), "%d.%m.%Y"
+        )
         filtered = [i for i in adverts if i["posted"] == yesterday]
 
         return
 
     def _test_klein_connection(self) -> None:
-        """_summary_
+        """Tests connection to the final_url at ebaykleinanzeigen.
 
         Raises:
-            RuntimeError: _description_
+            RuntimeError: caused by failure with any 4xx or 5xx error
         """
         req = requests.get(
             self.final_url,
@@ -234,14 +231,14 @@ class EbayKlein:
     def _parse_advert(
         self, url: str, adverts: List[Dict[str, str]]
     ) -> List[Dict[str, str]]:
-        """_summary_
+        """Parses important information form a single advert url.
 
         Args:
-            url (str): _description_
-            adverts (List[Dict[str, str]]): _description_
+            url (str): url for advert to be parsed
+            adverts (List[Dict[str, str]]): current list of parsed adverts
 
         Returns:
-            List[Dict[str, str]]: _description_
+            List[Dict[str, str]]: current list of parsed adverts with the latest appended
         """
         soup = bs(self.session.page_source, "lxml")
         top_info = soup.find("div", id="viewad-extra-info")

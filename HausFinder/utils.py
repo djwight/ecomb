@@ -5,6 +5,14 @@ import numpy as np
 
 
 def local_load_dot_env(path: str) -> Dict[str, str]:
+    """Loads env variables from a.env file without entering these into the container environment.
+
+    Args:
+        path (str): path to .env file
+
+    Returns:
+        Dict[str, str]: dict with env variable name as keys and values as the items
+    """
     with open(path, "r") as f:
         return dict(
             tuple(line.replace("\n", "").replace('"', "").split("="))
@@ -13,7 +21,7 @@ def local_load_dot_env(path: str) -> Dict[str, str]:
         )
 
 
-def time_in_mins(secs: int, dp: int = 2) -> float:
+def time_in_mins(secs: int, dp: int = 2) -> np.float64:
     """Returns seconds as minutes.
 
     Args:

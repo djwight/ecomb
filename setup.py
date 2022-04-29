@@ -13,7 +13,6 @@ setup(
         "selenium>=4.1.0",
         "pyOpenSSL>=21.0.0",
         "pytest>=7.1.2",
-        "python-dotenv>=0.20.0",
         "joblib>=1.1.0",
     ],
 )

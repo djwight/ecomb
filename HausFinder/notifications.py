@@ -1,13 +1,14 @@
+import logging
+from typing import List
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import pandas as pd
 
 
 class EmailHandler:
-    def __init__(self, sender_email: str, receiver_email: str) -> None:
+    def __init__(self, sender_email: str, receiver_emails: List[str]) -> None:
         self.sender = sender_email
-        self.receiver = receiver_email
+        self.receivers = receiver_emails
         self.server = smtplib.SMTP("smtp.gmail.com", 587)
         self.email = None
 
@@ -15,11 +16,11 @@ class EmailHandler:
         email = MIMEMultipart("alternative")
         email["Subject"] = subject
         email["From"] = self.sender
-        email["To"] = self.receiver
+        email["To"] = ", ".join(self.receivers)
         email.attach(MIMEText(text, "html"))
         self.email = email
 
-    def add_attachment(self, attachment: pd.DataFrame):
+    def add_attachment(self):
         pass
 
     def send_email(
@@ -28,7 +29,11 @@ class EmailHandler:
         password: str,
     ) -> None:
         self._auth_with_server(username, password)
-        self.server.sendmail(self.sender, self.receiver, self.email.as_string())
+        logging.info(f"Sending emails to: {self.receivers}")
+        self.server.sendmail(self.sender, self.receivers, self.email.as_string())
+
+    def server_quit(self) -> None:
+        self.server.quit()
 
     def _auth_with_server(self, username: str, password: str) -> None:
         self.server.ehlo()
