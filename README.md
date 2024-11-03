@@ -1,13 +1,13 @@
 <img src="misc/proj-symbol.png" width="130" title="Citrus myrtifolia" align="right">
 
 # eComb- Haus and Wohnung Finder
-A codebase for scraping house or apartment listings from [ebay kleinanzeigen](https://www.ebay-kleinanzeigen.de/) and [Ohne-makler](https://www.ohne-makler.net/) from re current day. 
+A codebase for scraping house or apartment listings from [ebay kleinanzeigen](https://www.ebay-kleinanzeigen.de/) and [Ohne-makler](https://www.ohne-makler.net/) from the current day. 
 
 This can be run locally (with or without docker) or scheduled to run each day on a server to get the listings emailed to interested parties.
 
 ## Getting Started
 
-### Pre-requisites
+### Prerequisites
 Set up a gmail email account to send the listing notifications. Once the account is set up [create an app password](https://support.google.com/accounts/answer/185833) for later use with the script.
 
 
